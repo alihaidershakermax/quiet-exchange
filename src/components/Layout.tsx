@@ -18,7 +18,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className={cn(
       "flex flex-col min-h-screen",
       rtl && "font-arabic"
-    )}>
+    )}
+    dir={rtl ? "rtl" : "ltr"}
+    >
       <Header />
       
       <main className={cn(
