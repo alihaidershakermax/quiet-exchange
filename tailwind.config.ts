@@ -131,6 +131,13 @@ export default {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'gradient-whisper': 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
 				'gradient-blue': 'linear-gradient(135deg, #0EA5E9 0%, #8B5CF6 100%)'
+			},
+			fontFamily: {
+				arabic: ['Tajawal', 'sans-serif'],
+			},
+			textDirection: {
+				rtl: 'rtl',
+				ltr: 'ltr',
 			}
 		}
 	},

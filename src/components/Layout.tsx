@@ -3,6 +3,7 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { cn } from '@/lib/utils';
 
 interface LayoutProps {
@@ -11,9 +12,13 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { currentUser } = useAuth();
+  const { rtl } = useLanguage();
   
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className={cn(
+      "flex flex-col min-h-screen",
+      rtl && "font-arabic"
+    )}>
       <Header />
       
       <main className={cn(

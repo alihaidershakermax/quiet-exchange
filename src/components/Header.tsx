@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useNotifications } from '@/context/NotificationContext';
+import { useLanguage } from '@/context/LanguageContext';
+import ThemeToggle from './ThemeToggle';
+import LanguageToggle from './LanguageToggle';
 import {
   Bell,
   User,
@@ -29,6 +32,7 @@ import { Link } from 'react-router-dom';
 const Header: React.FC = () => {
   const { currentUser, logout } = useAuth();
   const { unreadCount } = useNotifications();
+  const { t, rtl } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -41,26 +45,29 @@ const Header: React.FC = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <MessageSquare className="h-6 w-6 text-whisper-primary" />
-          <span className="font-bold text-xl gradient-text">Whisper</span>
+          <span className="font-bold text-xl gradient-text">{t.appName}</span>
         </Link>
 
         {/* Navigation - Desktop */}
         <nav className="hidden md:flex items-center space-x-1">
           <Link to="/" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-whisper-primary transition-colors">
-            Home
+            {t.home}
           </Link>
           <Link to="/messages" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-whisper-primary transition-colors">
-            Messages
+            {t.messages}
           </Link>
           {currentUser && (currentUser.role === 'admin' || currentUser.role === 'owner') && (
             <Link to="/admin" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-whisper-primary transition-colors">
-              Dashboard
+              {t.dashboard}
             </Link>
           )}
         </nav>
 
         {/* User Menu - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
+          <ThemeToggle />
+          <LanguageToggle />
+          
           {currentUser ? (
             <>
               {/* Notification Bell */}
@@ -76,10 +83,10 @@ const Header: React.FC = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                  <DropdownMenuLabel>{t.notifications}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/notifications">View all notifications</Link>
+                    <Link to="/notifications">{t.notifications}</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -96,22 +103,22 @@ const Header: React.FC = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align={rtl ? "start" : "end"} className="w-56">
                   <DropdownMenuLabel>{currentUser.displayName}</DropdownMenuLabel>
                   <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    {currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)}
+                    {t[currentUser.role as keyof typeof t]}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="cursor-pointer flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
+                      <span>{t.profile}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <span>{t.logout}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -119,17 +126,18 @@ const Header: React.FC = () => {
           ) : (
             <>
               <Link to="/login">
-                <Button variant="ghost">Log in</Button>
+                <Button variant="ghost">{t.login}</Button>
               </Link>
               <Link to="/register">
-                <Button>Sign up</Button>
+                <Button>{t.register}</Button>
               </Link>
             </>
           )}
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
@@ -140,13 +148,16 @@ const Header: React.FC = () => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-background border-b">
           <div className="px-2 pt-2 pb-3 space-y-1">
+            <div className="p-2">
+              <LanguageToggle />
+            </div>
             <Link 
               to="/" 
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-whisper-light hover:text-whisper-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               <div className="flex items-center">
-                <Home className="mr-2 h-4 w-4" /> Home
+                <Home className="mr-2 h-4 w-4" /> {t.home}
               </div>
             </Link>
             <Link 
@@ -155,7 +166,7 @@ const Header: React.FC = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               <div className="flex items-center">
-                <MessageSquare className="mr-2 h-4 w-4" /> Messages
+                <MessageSquare className="mr-2 h-4 w-4" /> {t.messages}
               </div>
             </Link>
             {currentUser && (
@@ -165,7 +176,7 @@ const Header: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <div className="flex items-center">
-                  <User className="mr-2 h-4 w-4" /> Profile
+                  <User className="mr-2 h-4 w-4" /> {t.profile}
                 </div>
               </Link>
             )}
@@ -176,7 +187,7 @@ const Header: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <div className="flex items-center">
-                  <Settings className="mr-2 h-4 w-4" /> Dashboard
+                  <Settings className="mr-2 h-4 w-4" /> {t.dashboard}
                 </div>
               </Link>
             )}
@@ -189,7 +200,7 @@ const Header: React.FC = () => {
                 className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-50"
               >
                 <div className="flex items-center">
-                  <LogOut className="mr-2 h-4 w-4" /> Log out
+                  <LogOut className="mr-2 h-4 w-4" /> {t.logout}
                 </div>
               </button>
             )}
@@ -200,14 +211,14 @@ const Header: React.FC = () => {
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-whisper-light hover:text-whisper-primary"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Log in
+                  {t.login}
                 </Link>
                 <Link 
                   to="/register" 
                   className="block px-3 py-2 rounded-md text-base font-medium bg-whisper-primary text-white"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sign up
+                  {t.register}
                 </Link>
               </>
             )}

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useMessages } from '@/context/MessageContext';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -26,6 +27,7 @@ const RECIPIENTS = [
 const ComposeMessage: React.FC<ComposeMessageProps> = ({ recipientId: initialRecipientId, onSent }) => {
   const { sendMessage } = useMessages();
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
   
   const [message, setMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(true);
@@ -33,18 +35,19 @@ const ComposeMessage: React.FC<ComposeMessageProps> = ({ recipientId: initialRec
   
   const handleSend = async () => {
     if (!currentUser) {
-      toast.error('You must be logged in to send messages');
+      toast.error(t.loginFailed);
       return;
     }
     
     if (!message.trim()) {
-      toast.error('Message cannot be empty');
+      toast.error(t.messageEmpty);
       return;
     }
     
     try {
       await sendMessage(message, recipientId, isAnonymous);
       setMessage('');
+      toast.success(t.messageSent);
       
       if (onSent) {
         onSent();
@@ -56,15 +59,15 @@ const ComposeMessage: React.FC<ComposeMessageProps> = ({ recipientId: initialRec
   
   return (
     <div className="glass-card p-4 rounded-xl mb-8 animate-fade-in">
-      <h2 className="text-lg font-semibold mb-4">Compose Message</h2>
+      <h2 className="text-lg font-semibold mb-4">{t.compose}</h2>
       
       <div className="space-y-4">
         {!initialRecipientId && (
           <div>
-            <Label htmlFor="recipient">Send to:</Label>
+            <Label htmlFor="recipient">{t.sendTo}</Label>
             <Select value={recipientId} onValueChange={setRecipientId}>
               <SelectTrigger id="recipient" className="w-full">
-                <SelectValue placeholder="Select recipient" />
+                <SelectValue placeholder={t.sendTo} />
               </SelectTrigger>
               <SelectContent>
                 {RECIPIENTS.filter(r => r.id !== currentUser?.id).map((recipient) => (
@@ -78,10 +81,10 @@ const ComposeMessage: React.FC<ComposeMessageProps> = ({ recipientId: initialRec
         )}
         
         <div>
-          <Label htmlFor="message">Your message:</Label>
+          <Label htmlFor="message">{t.yourMessage}</Label>
           <Textarea
             id="message"
-            placeholder="Write your message here..."
+            placeholder={t.yourMessage}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             className="min-h-32 resize-none"
@@ -96,14 +99,14 @@ const ComposeMessage: React.FC<ComposeMessageProps> = ({ recipientId: initialRec
               onCheckedChange={setIsAnonymous}
             />
             <Label htmlFor="anonymous-mode" className="flex items-center gap-1">
-              Send anonymously
+              {t.sendAnonymously}
               <Lock className="h-3.5 w-3.5 ml-1 text-muted-foreground" />
             </Label>
           </div>
           
           <Button onClick={handleSend} className="flex items-center gap-1">
             <Send className="h-4 w-4" />
-            Send Message
+            {t.send}
           </Button>
         </div>
       </div>
